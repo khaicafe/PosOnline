@@ -8,5 +8,24 @@
   <body>
     <h1>💖 Hello World!</h1>
     <p>Welcome to your Electron application.</p>
+    <script>
+       navigator.usb.getDevices().then(devices => {
+    devices.forEach(device => {
+      console.log(device.productName);      // "Arduino Micro"
+      console.log(device.manufacturerName); // "Arduino LLC"
+    });
+  })
+  if ('usb' in navigator) {
+    navigator.usb.getDevices()
+      .then((devices) => {
+        console.log('list print', devices);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    console.log('navigator.usb is not supported in this browser.');
+  }
+    </script>
   </body>
 </html>
