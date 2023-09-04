@@ -1,2 +1,0 @@
-# PosOnline
-ElectronJS-POS
