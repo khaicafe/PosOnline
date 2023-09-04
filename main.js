@@ -2,11 +2,8 @@
 // yarn package // electron build
 // require("@electron/remote/main").initialize();
 // const mainRemote = require("@electron/remote/main");
-// // 
-
-
 const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
-const {PosPrinter} = require("./dist/index");
+const {PosPrinter} = require("./libPOS/index");
 app.commandLine.appendSwitch ("disable-http-cache");
 const path = require('path');
 const fs = require('fs-extra');
@@ -101,7 +98,7 @@ async function createMainWindow () {
   // console.log(mainWindow)
   // and load the index.html of the app.
   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  mainWindow.loadURL('https://dev-pos.neomenu.vn/staff/')
+  mainWindow.loadURL('http://localhost:3002/staff/')
   // hủy event minimize
   mainWindow.on('minimize',function(event){
     event.preventDefault();
@@ -297,7 +294,10 @@ autoUpdater.on("update-downloaded", (info) => {
 })
 
 /////////////////////// event nhận value từ renderer.js ///////////
-ipcMain.on('test-print', testPrint);
+ipcMain.on("test-print", (event, data) => {
+  console.log('name print')
+  testPrint()
+});
 function testPrint() {
     const options = {
         preview: false,              //  width of content body
