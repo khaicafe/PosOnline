@@ -2,8 +2,9 @@
 // yarn package // electron build
 // require("@electron/remote/main").initialize();
 // const mainRemote = require("@electron/remote/main");
+// const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
 const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
-const {PosPrinter} = require("./libPOS/index");
+// const {PosPrinter} = require("./libPOS/index");
 app.commandLine.appendSwitch ("disable-http-cache");
 const path = require('path');
 const fs = require('fs-extra');
@@ -11,8 +12,8 @@ const {autoUpdater} = require('electron-updater')
 autoUpdater.setFeedURL({
   "provider": "github",
   "owner": "khaicafe",
-  "repo": "PosOnline",
-  "token": "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"
+  "repo": "PosOnline"
+  // "token": "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"
 });
 
 const isDev = require("electron-is-dev");
@@ -73,7 +74,7 @@ const dispatch = (data) => {
 // }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-async function createMainWindow () {
+function createMainWindow () {
   const mainScreen = screen.getPrimaryDisplay();
 
   // Create the browser window.
@@ -84,6 +85,13 @@ async function createMainWindow () {
     // height: 225,
     width: 650,
     height: 430,
+    fullscreen: true,
+    // backgroundColor: "#363636",
+    // frame: false,
+    // enableLargerThanScreen: true,
+    // skipTaskbar: true,
+    // disableAutoHideCursor: false,
+
     icon: __dirname + '/icon.ico',
     maximizable: false, // Vô hiệu hóa maximize
     webPreferences: {
@@ -98,20 +106,26 @@ async function createMainWindow () {
   // console.log(mainWindow)
   // and load the index.html of the app.
   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  mainWindow.loadURL('http://localhost:3002/staff/')
+  // mainWindow.loadURL('https://dev-pos.neomenu.vn/staff/')
+  mainWindow.loadURL('https://t.pos.imenu.tech/')
+  
   // hủy event minimize
   mainWindow.on('minimize',function(event){
     event.preventDefault();
   });
+
   // anti close
   // mainWindow.on('close', function (event) {
   //     event.preventDefault();
   // });
-  // mainWindow.maximize();
-  // mainWindow.resizable = false;
+
+  mainWindow.maximize();
+  mainWindow.resizable = false;
   mainWindow.setMenu(null)
   mainWindow.setMenuBarVisibility(false)
-  mainWindow.resizable = false;
+  mainWindow.setAlwaysOnTop(true, "level");
+
+  // mainWindow.setalwaysontop("true") // dinh loi nhan may in
   // Thêm cửa sổ mới vào mảng windows
   windows.push(mainWindow); 
   // Open the DevTools.
@@ -119,14 +133,60 @@ async function createMainWindow () {
   isDev ? mainWindow.webContents.openDevTools({ mode: "detach" }) : autoUpdater.checkForUpdates();
 
   // Get info Printer
-  printers = await mainWindow.webContents.getPrintersAsync()
-  printers.forEach(printer => {
-    console.log('Name:', printer.name);
-    console.log('Description:', printer.description);
-    console.log('Is Default Printer:', printer.isDefault);
-    console.log('----------------------');
-  });
+  // printers = await mainWindow.webContents.getPrintersAsync()
+  // printers.forEach(printer => {
+  //   console.log('Name:', printer.name);
+  //   console.log('Description:', printer.description);
+  //   console.log('Is Default Printer:', printer.isDefault);
+  //   console.log('----------------------');
+  // });
+  let grantedDeviceThroughPermHandler
+  mainWindow.webContents.on('select-usb-device', (event, details, callback) => {
+    // Add events to handle devices being added or removed before the callback on
+    // `select-usb-device` is called.
+    mainWindow.webContents.on('usb-device-added', (event, device) => {
+      console.log('usb-device-added FIRED WITH', device)
+      // Optionally update details.deviceList
+    })
 
+    mainWindow.webContents.session.on('usb-device-removed', (event, device) => {
+      console.log('usb-device-removed FIRED WITH', device)
+      // Optionally update details.deviceList
+    })
+
+    event.preventDefault()
+    // if (details.deviceList && details.deviceList.length > 0) {
+    //   const deviceToReturn = details.deviceList.find((device) => {
+    //     return !grantedDeviceThroughPermHandler || (device.deviceId !== grantedDeviceThroughPermHandler.deviceId)
+    //   })
+    //   if (deviceToReturn) {
+    //     callback(deviceToReturn.deviceId)
+    //   } else {
+    //     callback()
+    //   }
+    // }
+  })
+
+  mainWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+    console.log('check permission', requestingOrigin, details)
+    return true
+    // if (permission === 'usb' && details.securityOrigin === 'file:///') {
+    //   return true
+    // }
+  })
+
+  mainWindow.webContents.session.setDevicePermissionHandler((details) => {
+    return true
+    // if (details.deviceType === 'usb' && details.origin === 'file://') {
+    //   if (!grantedDeviceThroughPermHandler) {
+    //     grantedDeviceThroughPermHandler = details.device
+    //     console.log('permission Device', grantedDeviceThroughPermHandler)
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // }
+  })
   // mainRemote.enable(mainWindow.webContents);
   // Bắt sự kiện khi cửa sổ được đóng
   mainWindow.on('close', (event) => {
@@ -147,7 +207,7 @@ async function createMainWindow () {
       });
     }
   })
-  return mainWindow
+  // return mainWindow
 }
 
 function createAdWindow() {
@@ -157,6 +217,7 @@ function createAdWindow() {
     y: displays[1].bounds.y,
     width: displays[1].size.width,
     height: displays[1].size.height,
+    fullscreen: true, // full
     frame: false, // Ẩn thanh title
     skipTaskbar: true, // hide taskbar
     titleBarStyle: 'hidden', // Ẩn thanh title trên macOS
@@ -166,11 +227,13 @@ function createAdWindow() {
   });
   // Thêm cửa sổ mới vào mảng windows
   windows.push(adWindow);
-  adWindow.loadURL('https://dev-pos.neomenu.vn/miniweb')
+  // adWindow.loadURL('https://dev-pos.neomenu.vn/miniweb')
+  adWindow.loadURL('https://t.pos.imenu.tech/miniweb')
   adWindow.maximize();
   adWindow.resizable = false;
   adWindow.setMenu(null)
   adWindow.setMenuBarVisibility(false)
+  adWindow.setAlwaysOnTop(true, "level");
   adWindow.on('closed', () => {
     adWindow = null;
   });
@@ -194,6 +257,44 @@ function createAdWindow() {
       });
     }
   })
+  // adWindow.webContents.session.on('select-usb-device', (event, details, callback) => {
+  //   console.log('list', details, event)
+  //   // Add events to handle devices being added or removed before the callback on
+  //   // `select-usb-device` is called.
+  //   adWindow.webContents.session.on('usb-device-added', (event, device) => {
+  //     console.log('list', details)
+  //     console.log('usb-device-added FIRED WITH', device)
+  //     // Optionally update details.deviceList
+  //   })
+
+  //   adWindow.webContents.session.on('usb-device-removed', (event, device) => {
+  //     console.log('list', details)
+  //     console.log('usb-device-removed FIRED WITH', device)
+  //     // Optionally update details.deviceList
+  //   })
+  //   console.log('list', details.deviceList)
+  //   event.preventDefault();
+
+
+  //   // if (details.deviceList && details.deviceList.length > 0) {
+  //   //   const deviceToReturn = details.deviceList.find((device) => {
+  //   //     return !grantedDeviceThroughPermHandler || (device.deviceId !== grantedDeviceThroughPermHandler.deviceId)
+  //   //   })
+  //   //   if (deviceToReturn) {
+  //   //     callback(deviceToReturn.deviceId)
+  //   //   } else {
+  //   //     callback()
+  //   //   }
+  //   // }
+  // })
+
+  // adWindow.webContents.session.setPermissionCheckHandler((webContents, permission, requestingOrigin, details) => {
+  //   console.log('setPermissionCheckHandler', permission,details)
+  //   return true
+  //   // if (permission === 'usb' && details.securityOrigin === 'file:///') {
+  //   //   return true
+  //   // }
+  // })
 }
 
 // This method will be called when Electron has finished
@@ -201,7 +302,11 @@ function createAdWindow() {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createMainWindow();
-  createAdWindow();
+  try {
+    createAdWindow();
+  } catch (error) {
+    console.log('khong co man 2')
+  }
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('version', app.getVersion())
   })
@@ -403,13 +508,13 @@ function testPrint() {
     ]
 
     try {
-        PosPrinter.print(data, options)
+        printers.print(data, options)
             .then(() => console.log('done'))
             .catch((error) => {
                 console.error(error);
             });
     } catch (e) {
-        console.log(PosPrinter)
+        console.log(printers)
         console.log(e);
     }
 }
