@@ -113,12 +113,11 @@ function createMainWindow () {
     // width: 650,
     // height: 430,
     // width, height,
-    // fullscreen: true,
     // backgroundColor: "#363636",
-    
     // enableLargerThanScreen: true,
     // skipTaskbar: true,
     // disableAutoHideCursor: false,
+    // fullscreen: true,
     frame: false,
     maximizable: false,
     minimizable: false,
