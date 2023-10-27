@@ -72,26 +72,43 @@ const dispatch = (data) => {
 // if (require('electron-squirrel-startup')) {
 //   app.quit();
 // }
+///////////////////////// power shell //////////////////////
+// powershell -command "&{$p='HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3';$v=(Get-ItemProperty -Path $p).Settings;$v[8]=2;&Set-ItemProperty -Path $p -Name Settings -Value $v;&Stop-Process -f -ProcessName explorer}"
+var spawn = require("child_process").spawn,child;
+child = spawn("powershell.exe",["c:\\temp\\helloworld.ps1"]);
+child.stdout.on("data",function(data){
+    console.log("Powershell Data: " + data);
+});
+child.stderr.on("data",function(data){
+    console.log("Powershell Errors: " + data);
+});
+child.on("exit",function(){
+    console.log("Powershell Script finished");
+});
+child.stdin.end(); //end input   
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createMainWindow () {
   const mainScreen = screen.getPrimaryDisplay();
+  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    x: 0,
-    y: 0,
-    // width: 350,
-    // height: 225,
-    width: 650,
-    height: 430,
-    fullscreen: true,
+    // x: 0,
+    // y: 0,
+    // // width: 350,
+    // // height: 225,
+    // width: 650,
+    // height: 430,
+    width, height,
+    // fullscreen: true,
     // backgroundColor: "#363636",
     // frame: false,
     // enableLargerThanScreen: true,
     // skipTaskbar: true,
     // disableAutoHideCursor: false,
-
+    center: true,
+    autoHideMenuBar: true,
     icon: __dirname + '/icon.ico',
     maximizable: false, // Vô hiệu hóa maximize
     webPreferences: {
@@ -123,7 +140,7 @@ function createMainWindow () {
   mainWindow.resizable = false;
   mainWindow.setMenu(null)
   mainWindow.setMenuBarVisibility(false)
-  mainWindow.setAlwaysOnTop(true, "level");
+  // mainWindow.setAlwaysOnTop(true, "level");
 
   // mainWindow.setalwaysontop("true") // dinh loi nhan may in
   // Thêm cửa sổ mới vào mảng windows
@@ -323,198 +340,198 @@ app.on('window-all-closed', function () {
 /////////////////////// event autoupdate ////////////////
 autoUpdater.channel = 'latest'
 autoUpdater.allowDowngrade = false
-autoUpdater.autoInstallOnAppQuit = false
-autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
+autoUpdater.autoDownload = true
 
-autoUpdater.on("checking-for-update", () => {
-    log.info('checking-for-update...')
-    // dispatch('checking-for-update.')
-})
-autoUpdater.on("update-available", (info) => {
-  log.info('update-available...NeoMusic v' + info.version)
-   // Hiển thị một hộp thoại xác nhận cho người dùng
-   const dialogOptions = {
-    type: 'info',
-    buttons: ['Yes', 'No'],
-    title: `Update NeoMusic v${info.version}`,
-    message: 'An update is available. Do you want to download it?',
-  };
+// autoUpdater.on("checking-for-update", () => {
+//     log.info('checking-for-update...')
+//     // dispatch('checking-for-update.')
+// })
+// autoUpdater.on("update-available", (info) => {
+//   log.info('update-available...NeoMusic v' + info.version)
+//    // Hiển thị một hộp thoại xác nhận cho người dùng
+//    const dialogOptions = {
+//     type: 'info',
+//     buttons: ['Yes', 'No'],
+//     title: `Update NeoMusic v${info.version}`,
+//     message: 'An update is available. Do you want to download it?',
+//   };
 
-  dialog.showMessageBox(dialogOptions).then((result) => {
-    // Nếu người dùng chọn "Yes"
-    if (result.response === 0) {
-      mainWindow.webContents.send('Update_available', 'test')
-      // Tiến hành tải xuống bản cập nhật
-      autoUpdater.downloadUpdate();
-    }
-  });
-    // log.info('update-available')
-    // const dialogOpts = {
-    //   type: 'info',
-    //   buttons: ['Ok', 'Cancel'],
-    //   title: 'Application Update',
-    //   message: process.platform === 'win32' ? releaseNotes : releaseName,
-    //   detail: 'A new version is being downloaded.'
-    // }
-    // dialog.showMessageBox(dialogOpts, (response) => {
-    //   log.info('response', response)
-    //   if (response.response === 0){
-    //     autoUpdater.on("download-progress", (progressTrack) => {
-    //       log.info('\n\ndownload-progress')
-    //       // log.info(progressTrack)
-    //       mainWindow.webContents.send('download-progress', progressTrack.percent)
-    //      })
-    //   }
-    // });
-})
-autoUpdater.on('update-not-available', (info) => {
-    dispatch('Update not available.')
-  })
-autoUpdater.on("error", (err) => {
-    log.warn('Error in auto-updater' + err)
-})
-autoUpdater.on("download-progress", (progressObj) => {
-    // log.info('\ndownload-progress')
-    // log.info(progressObj)
-    mainWindow.webContents.send('download-progress', progressObj.percent)
-})
-autoUpdater.on("update-downloaded", (info) => {
-  if (!updateDownloaded) {
-    // Đánh dấu sự kiện đã được gọi
-    updateDownloaded = true;
-    log.info('update_downloaded')
-    mainWindow.webContents.send('update_downloaded', 'test')
-    const dialogOpts = {
-      type: 'info',
-      buttons: ['Restart', 'Later'],
-      title:  `NeoMusic v${info.version}`,
-      // message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    };
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      if (returnValue.response === 0) autoUpdater.quitAndInstall()
-      // else autoUpdater.autoInstallOnAppQuit = false
-    })
-  }
-})
+//   dialog.showMessageBox(dialogOptions).then((result) => {
+//     // Nếu người dùng chọn "Yes"
+//     if (result.response === 0) {
+//       mainWindow.webContents.send('Update_available', 'test')
+//       // Tiến hành tải xuống bản cập nhật
+//       autoUpdater.downloadUpdate();
+//     }
+//   });
+//     // log.info('update-available')
+//     // const dialogOpts = {
+//     //   type: 'info',
+//     //   buttons: ['Ok', 'Cancel'],
+//     //   title: 'Application Update',
+//     //   message: process.platform === 'win32' ? releaseNotes : releaseName,
+//     //   detail: 'A new version is being downloaded.'
+//     // }
+//     // dialog.showMessageBox(dialogOpts, (response) => {
+//     //   log.info('response', response)
+//     //   if (response.response === 0){
+//     //     autoUpdater.on("download-progress", (progressTrack) => {
+//     //       log.info('\n\ndownload-progress')
+//     //       // log.info(progressTrack)
+//     //       mainWindow.webContents.send('download-progress', progressTrack.percent)
+//     //      })
+//     //   }
+//     // });
+// })
+// autoUpdater.on('update-not-available', (info) => {
+//     dispatch('Update not available.')
+//   })
+// autoUpdater.on("error", (err) => {
+//     log.warn('Error in auto-updater' + err)
+// })
+// autoUpdater.on("download-progress", (progressObj) => {
+//     // log.info('\ndownload-progress')
+//     // log.info(progressObj)
+//     mainWindow.webContents.send('download-progress', progressObj.percent)
+// })
+// autoUpdater.on("update-downloaded", (info) => {
+//   if (!updateDownloaded) {
+//     // Đánh dấu sự kiện đã được gọi
+//     updateDownloaded = true;
+//     log.info('update_downloaded')
+//     mainWindow.webContents.send('update_downloaded', 'test')
+//     const dialogOpts = {
+//       type: 'info',
+//       buttons: ['Restart', 'Later'],
+//       title:  `NeoMusic v${info.version}`,
+//       // message: process.platform === 'win32' ? releaseNotes : releaseName,
+//       detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+//     };
+//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//       if (returnValue.response === 0) autoUpdater.quitAndInstall()
+//       // else autoUpdater.autoInstallOnAppQuit = false
+//     })
+//   }
+// })
 
-/////////////////////// event nhận value từ renderer.js ///////////
-ipcMain.on("test-print", (event, data) => {
-  console.log('name print')
-  testPrint()
-});
-function testPrint() {
-    const options = {
-        preview: false,              //  width of content body
-        silent: true,
-        margin: 'auto',            // margin of content body
-        copies: 1,                    // Number of copies to print
-        printerName: 'RONGTA 58mm Series Printer',        // printerName: string, check with webContent.getPrinters()
-        timeOutPerLine: 1000,
-        pageSize: '80mm'  // page size
-    }
+// /////////////////////// event nhận value từ renderer.js ///////////
+// ipcMain.on("test-print", (event, data) => {
+//   console.log('name print')
+//   testPrint()
+// });
+// function testPrint() {
+//     const options = {
+//         preview: false,              //  width of content body
+//         silent: true,
+//         margin: 'auto',            // margin of content body
+//         copies: 1,                    // Number of copies to print
+//         printerName: 'RONGTA 58mm Series Printer',        // printerName: string, check with webContent.getPrinters()
+//         timeOutPerLine: 1000,
+//         pageSize: '80mm'  // page size
+//     }
 
-    const data = [
-        {
-            type: 'table',
-            style: {border: '1px solid #ddd'},             // style the table
-            // list of the columns to be rendered in the table header
-            tableHeader: [{type: 'text', value: 'People'}, {
-                type: 'image',
-                url: 'https://randomuser.me/api/portraits/men/13.jpg'
-            }],
-            // multidimensional array depicting the rows and columns of the table body
-            tableBody: [
-                [{type: 'text', value: 'Marcus'}, {
-                    type: 'image',
-                    url: 'https://randomuser.me/api/portraits/men/43.jpg'
-                }],
-                [{type: 'text', value: 'Boris'}, {
-                    type: 'image',
-                    url: 'https://randomuser.me/api/portraits/men/41.jpg'
-                }],
-                [{type: 'text', value: 'Andrew'}, {
-                    type: 'image',
-                    url: 'https://randomuser.me/api/portraits/men/23.jpg'
-                }],
-                [{type: 'text', value: 'Tyresse'}, {
-                    type: 'image',
-                    url: 'https://randomuser.me/api/portraits/men/53.jpg'
-                }],
-            ],
-            // list of columns to be rendered in the table footer
-            tableFooter: [{type: 'text', value: 'People'}, 'Image'],
-            // custom style for the table header
-            tableHeaderStyle: {backgroundColor: 'red', color: 'white'},
-            // custom style for the table body
-            tableBodyStyle: {'border': '0.5px solid #ddd'},
-            // custom style for the table footer
-            tableFooterStyle: {backgroundColor: '#000', color: 'white'},
-        },
-        {
-            type: 'image',
-            url: 'https://randomuser.me/api/portraits/men/43.jpg',     // file path
-            position: 'center',                                  // position of image: 'left' | 'center' | 'right'
-            width: '60px',                                           // width of image in px; default: auto
-            height: '60px',
-        },
-        {
-            type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
-            value: 'SAMPLE HEADING',
-            style: {fontWeight: "700", textAlign: 'center', fontSize: "24px"}
-        },
-        {
-            type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table'
-            value: 'Secondary text',
-            style: {textDecoration: "underline", fontSize: "10px", textAlign: "center", color: "red"}
-        },
-        {
-            type: 'barCode',
-            value: '023456789010',
-            height: 40,                     // height of barcode, applicable only to bar and QR codes
-            width: 2,                       // width of barcode, applicable only to bar and QR codes
-            displayValue: true,             // Display value below barcode
-            fontsize: 12,
-        },
-        {
-            type: 'qrCode',
-            value: 'https://github.com/Hubertformin/electron-pos-printer',
-            height: 55,
-            width: 55,
-            position: 'right'
-        },
-        {
-            type: 'table',
-            // style the table
-            style: {border: '1px solid #ddd'},
-            // list of the columns to be rendered in the table header
-            tableHeader: ['Animal', 'Age'],
-            // multidimensional array depicting the rows and columns of the table body
-            tableBody: [
-                ['Cat', 2],
-                ['Dog', 4],
-                ['Horse', 12],
-                ['Pig', 4],
-            ],
-            // list of columns to be rendered in the table footer
-            tableFooter: ['Animal', 'Age'],
-            // custom style for the table header
-            tableHeaderStyle: {backgroundColor: '#000', color: 'white'},
-            // custom style for the table body
-            tableBodyStyle: {'border': '0.5px solid #ddd'},
-            // custom style for the table footer
-            tableFooterStyle: {backgroundColor: '#000', color: 'white'},
-        }
-    ]
+//     const data = [
+//         {
+//             type: 'table',
+//             style: {border: '1px solid #ddd'},             // style the table
+//             // list of the columns to be rendered in the table header
+//             tableHeader: [{type: 'text', value: 'People'}, {
+//                 type: 'image',
+//                 url: 'https://randomuser.me/api/portraits/men/13.jpg'
+//             }],
+//             // multidimensional array depicting the rows and columns of the table body
+//             tableBody: [
+//                 [{type: 'text', value: 'Marcus'}, {
+//                     type: 'image',
+//                     url: 'https://randomuser.me/api/portraits/men/43.jpg'
+//                 }],
+//                 [{type: 'text', value: 'Boris'}, {
+//                     type: 'image',
+//                     url: 'https://randomuser.me/api/portraits/men/41.jpg'
+//                 }],
+//                 [{type: 'text', value: 'Andrew'}, {
+//                     type: 'image',
+//                     url: 'https://randomuser.me/api/portraits/men/23.jpg'
+//                 }],
+//                 [{type: 'text', value: 'Tyresse'}, {
+//                     type: 'image',
+//                     url: 'https://randomuser.me/api/portraits/men/53.jpg'
+//                 }],
+//             ],
+//             // list of columns to be rendered in the table footer
+//             tableFooter: [{type: 'text', value: 'People'}, 'Image'],
+//             // custom style for the table header
+//             tableHeaderStyle: {backgroundColor: 'red', color: 'white'},
+//             // custom style for the table body
+//             tableBodyStyle: {'border': '0.5px solid #ddd'},
+//             // custom style for the table footer
+//             tableFooterStyle: {backgroundColor: '#000', color: 'white'},
+//         },
+//         {
+//             type: 'image',
+//             url: 'https://randomuser.me/api/portraits/men/43.jpg',     // file path
+//             position: 'center',                                  // position of image: 'left' | 'center' | 'right'
+//             width: '60px',                                           // width of image in px; default: auto
+//             height: '60px',
+//         },
+//         {
+//             type: 'text',                                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table
+//             value: 'SAMPLE HEADING',
+//             style: {fontWeight: "700", textAlign: 'center', fontSize: "24px"}
+//         },
+//         {
+//             type: 'text',                       // 'text' | 'barCode' | 'qrCode' | 'image' | 'table'
+//             value: 'Secondary text',
+//             style: {textDecoration: "underline", fontSize: "10px", textAlign: "center", color: "red"}
+//         },
+//         {
+//             type: 'barCode',
+//             value: '023456789010',
+//             height: 40,                     // height of barcode, applicable only to bar and QR codes
+//             width: 2,                       // width of barcode, applicable only to bar and QR codes
+//             displayValue: true,             // Display value below barcode
+//             fontsize: 12,
+//         },
+//         {
+//             type: 'qrCode',
+//             value: 'https://github.com/Hubertformin/electron-pos-printer',
+//             height: 55,
+//             width: 55,
+//             position: 'right'
+//         },
+//         {
+//             type: 'table',
+//             // style the table
+//             style: {border: '1px solid #ddd'},
+//             // list of the columns to be rendered in the table header
+//             tableHeader: ['Animal', 'Age'],
+//             // multidimensional array depicting the rows and columns of the table body
+//             tableBody: [
+//                 ['Cat', 2],
+//                 ['Dog', 4],
+//                 ['Horse', 12],
+//                 ['Pig', 4],
+//             ],
+//             // list of columns to be rendered in the table footer
+//             tableFooter: ['Animal', 'Age'],
+//             // custom style for the table header
+//             tableHeaderStyle: {backgroundColor: '#000', color: 'white'},
+//             // custom style for the table body
+//             tableBodyStyle: {'border': '0.5px solid #ddd'},
+//             // custom style for the table footer
+//             tableFooterStyle: {backgroundColor: '#000', color: 'white'},
+//         }
+//     ]
 
-    try {
-        printers.print(data, options)
-            .then(() => console.log('done'))
-            .catch((error) => {
-                console.error(error);
-            });
-    } catch (e) {
-        console.log(printers)
-        console.log(e);
-    }
-}
+//     try {
+//         printers.print(data, options)
+//             .then(() => console.log('done'))
+//             .catch((error) => {
+//                 console.error(error);
+//             });
+//     } catch (e) {
+//         console.log(printers)
+//         console.log(e);
+//     }
+// }
