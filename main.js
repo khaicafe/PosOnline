@@ -74,23 +74,35 @@ const dispatch = (data) => {
 // }
 ///////////////////////// power shell //////////////////////
 // powershell -command "&{$p='HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3';$v=(Get-ItemProperty -Path $p).Settings;$v[8]=2;&Set-ItemProperty -Path $p -Name Settings -Value $v;&Stop-Process -f -ProcessName explorer}"
-var spawn = require("child_process").spawn,child;
-child = spawn("powershell.exe",["c:\\temp\\helloworld.ps1"]);
-child.stdout.on("data",function(data){
-    console.log("Powershell Data: " + data);
-});
-child.stderr.on("data",function(data){
-    console.log("Powershell Errors: " + data);
-});
-child.on("exit",function(){
-    console.log("Powershell Script finished");
-});
-child.stdin.end(); //end input   
+// var spawn = require("child_process").spawn,child;
+// child = spawn("powershell.exe",["Set-UserPhoto -Identity 'NeoCafe' -PictureData ([System.IO.File]::ReadAllBytes('logo.jpg'))"]);
+// child.stdout.on("data",function(data){
+//     console.log("Powershell Data: " + data);
+// });
+// child.stderr.on("data",function(data){
+//     console.log("Powershell Errors: " + data);
+// });
+// child.on("exit",function(){
+//     console.log("Powershell Script finished");
+// });
+// child.stdin.end(); //end input   
+// /////////////////////////////////// cmd ///////////////////
+// const exec = require('child_process').exec;
 
+// function execute(command, callback) {
+//     exec(command, (error, stdout, stderr) => { 
+//         callback(stdout); 
+//     });
+// };
+
+// // call the function
+// execute('ping -c 4 0.0.0.0', (output) => {
+//     console.log(output);
+// });
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createMainWindow () {
   const mainScreen = screen.getPrimaryDisplay();
-  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+  // const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -100,13 +112,16 @@ function createMainWindow () {
     // // height: 225,
     // width: 650,
     // height: 430,
-    width, height,
+    // width, height,
     // fullscreen: true,
     // backgroundColor: "#363636",
-    // frame: false,
+    
     // enableLargerThanScreen: true,
     // skipTaskbar: true,
     // disableAutoHideCursor: false,
+    frame: false,
+    maximizable: false,
+    minimizable: false,
     center: true,
     autoHideMenuBar: true,
     icon: __dirname + '/icon.ico',
@@ -138,11 +153,10 @@ function createMainWindow () {
 
   mainWindow.maximize();
   mainWindow.resizable = false;
-  mainWindow.setMenu(null)
-  mainWindow.setMenuBarVisibility(false)
+  // mainWindow.setMenu(null)
+  // mainWindow.setMenuBarVisibility(false)
   // mainWindow.setAlwaysOnTop(true, "level");
 
-  // mainWindow.setalwaysontop("true") // dinh loi nhan may in
   // Thêm cửa sổ mới vào mảng windows
   windows.push(mainWindow); 
   // Open the DevTools.
@@ -234,6 +248,9 @@ function createAdWindow() {
     y: displays[1].bounds.y,
     width: displays[1].size.width,
     height: displays[1].size.height,
+    maximizable: false,
+    minimizable: false,
+    autoHideMenuBar: true,
     fullscreen: true, // full
     frame: false, // Ẩn thanh title
     skipTaskbar: true, // hide taskbar
