@@ -40,7 +40,7 @@ let updateDownloaded = false;
 
 // khởi động cùng window ds
 app.setLoginItemSettings({
-  // openAtLogin: false,
+  openAtLogin: true,
   // openAsHidden: true,
   path: app.getPath('exe'),
 });
@@ -331,21 +331,48 @@ function createAdWindow() {
   // })
 }
 
+// check app đã run hay chưa
+// let myWindow = null
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  // app.on('second-instance', (event, commandLine, workingDirectory) => {
+  //   // Someone tried to run a second instance, we should focus our window.
+  //   if (myWindow) {
+  //     if (myWindow.isMinimized()) myWindow.restore()
+  //     myWindow.focus()
+  //   }
+  // })
+  // Create myWindow, load the rest of the app, etc...
+  app.on('ready', () => {
+    createMainWindow();
+    try {
+      createAdWindow();
+    } catch (error) {
+      console.log('khong co man 2')
+    }
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.send('version', app.getVersion())
+    })
+  })
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createMainWindow();
-  try {
-    createAdWindow();
-  } catch (error) {
-    console.log('khong co man 2')
-  }
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('version', app.getVersion())
-  })
+
+// app.whenReady().then(() => {
+//   createMainWindow();
+//   try {
+//     createAdWindow();
+//   } catch (error) {
+//     console.log('khong co man 2')
+//   }
+//   mainWindow.webContents.on('did-finish-load', () => {
+//     mainWindow.webContents.send('version', app.getVersion())
+//   })
   
-})
+// })
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
