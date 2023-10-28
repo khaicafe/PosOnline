@@ -40,10 +40,11 @@ let updateDownloaded = false;
 
 // khởi động cùng window ds
 app.setLoginItemSettings({
-  openAtLogin: true,
+  // openAtLogin: false,
   // openAsHidden: true,
   path: app.getPath('exe'),
 });
+
 
 // Delete folder update
 fs.remove(folderD, (err) => {
@@ -102,7 +103,7 @@ const dispatch = (data) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createMainWindow () {
   const mainScreen = screen.getPrimaryDisplay();
-  // const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+  const {width, height} = screen.getPrimaryDisplay().workAreaSize
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -110,8 +111,8 @@ function createMainWindow () {
     // y: 0,
     // // width: 350,
     // // height: 225,
-    // width: 650,
-    // height: 430,
+    width: width,
+    height: height,
     // width, height,
     // backgroundColor: "#363636",
     // enableLargerThanScreen: true,
@@ -150,7 +151,7 @@ function createMainWindow () {
   //     event.preventDefault();
   // });
 
-  mainWindow.maximize();
+  // mainWindow.maximize();
   mainWindow.resizable = false;
   // mainWindow.setMenu(null)
   // mainWindow.setMenuBarVisibility(false)
