@@ -17,6 +17,9 @@
   },
   "license": "MIT",
   "build": {
+    "asarUnpack":[
+      "zadig.exe"
+    ],
     "nsis": {
       "include": "build/installer.nsh",
       "oneClick": true,

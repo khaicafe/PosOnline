@@ -39,11 +39,11 @@ let updateDownloaded = false;
 // if (require('electron-squirrel-startup')) app.quit();
 
 // khởi động cùng window ds
-app.setLoginItemSettings({
-  openAtLogin: true,
-  // openAsHidden: true,
-  path: app.getPath('exe'),
-});
+// app.setLoginItemSettings({
+//   openAtLogin: true,
+//   // openAsHidden: true,
+//   path: app.getPath('exe'),
+// });
 
 
 // Delete folder update
