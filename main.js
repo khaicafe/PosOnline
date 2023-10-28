@@ -45,6 +45,7 @@ app.setLoginItemSettings({
   path: app.getPath('exe'),
 });
 
+
 // Delete folder update
 fs.remove(folderD, (err) => {
   if (err) {
@@ -74,23 +75,35 @@ const dispatch = (data) => {
 // }
 ///////////////////////// power shell //////////////////////
 // powershell -command "&{$p='HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3';$v=(Get-ItemProperty -Path $p).Settings;$v[8]=2;&Set-ItemProperty -Path $p -Name Settings -Value $v;&Stop-Process -f -ProcessName explorer}"
-var spawn = require("child_process").spawn,child;
-child = spawn("powershell.exe",["c:\\temp\\helloworld.ps1"]);
-child.stdout.on("data",function(data){
-    console.log("Powershell Data: " + data);
-});
-child.stderr.on("data",function(data){
-    console.log("Powershell Errors: " + data);
-});
-child.on("exit",function(){
-    console.log("Powershell Script finished");
-});
-child.stdin.end(); //end input   
+// var spawn = require("child_process").spawn,child;
+// child = spawn("powershell.exe",["Set-UserPhoto -Identity 'NeoCafe' -PictureData ([System.IO.File]::ReadAllBytes('logo.jpg'))"]);
+// child.stdout.on("data",function(data){
+//     console.log("Powershell Data: " + data);
+// });
+// child.stderr.on("data",function(data){
+//     console.log("Powershell Errors: " + data);
+// });
+// child.on("exit",function(){
+//     console.log("Powershell Script finished");
+// });
+// child.stdin.end(); //end input   
+// /////////////////////////////////// cmd ///////////////////
+// const exec = require('child_process').exec;
 
+// function execute(command, callback) {
+//     exec(command, (error, stdout, stderr) => { 
+//         callback(stdout); 
+//     });
+// };
+
+// // call the function
+// execute('ping -c 4 0.0.0.0', (output) => {
+//     console.log(output);
+// });
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function createMainWindow () {
   const mainScreen = screen.getPrimaryDisplay();
-  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+  const {width, height} = screen.getPrimaryDisplay().workAreaSize
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -98,15 +111,17 @@ function createMainWindow () {
     // y: 0,
     // // width: 350,
     // // height: 225,
-    // width: 650,
-    // height: 430,
-    width, height,
-    // fullscreen: true,
+    width: width,
+    height: height,
+    // width, height,
     // backgroundColor: "#363636",
-    // frame: false,
     // enableLargerThanScreen: true,
     // skipTaskbar: true,
     // disableAutoHideCursor: false,
+    // fullscreen: true,
+    frame: false,
+    maximizable: false,
+    minimizable: false,
     center: true,
     autoHideMenuBar: true,
     icon: __dirname + '/icon.ico',
@@ -136,13 +151,12 @@ function createMainWindow () {
   //     event.preventDefault();
   // });
 
-  mainWindow.maximize();
+  // mainWindow.maximize();
   mainWindow.resizable = false;
-  mainWindow.setMenu(null)
-  mainWindow.setMenuBarVisibility(false)
+  // mainWindow.setMenu(null)
+  // mainWindow.setMenuBarVisibility(false)
   // mainWindow.setAlwaysOnTop(true, "level");
 
-  // mainWindow.setalwaysontop("true") // dinh loi nhan may in
   // Thêm cửa sổ mới vào mảng windows
   windows.push(mainWindow); 
   // Open the DevTools.
@@ -234,6 +248,9 @@ function createAdWindow() {
     y: displays[1].bounds.y,
     width: displays[1].size.width,
     height: displays[1].size.height,
+    maximizable: false,
+    minimizable: false,
+    autoHideMenuBar: true,
     fullscreen: true, // full
     frame: false, // Ẩn thanh title
     skipTaskbar: true, // hide taskbar
@@ -314,21 +331,48 @@ function createAdWindow() {
   // })
 }
 
+// check app đã run hay chưa
+// let myWindow = null
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  // app.on('second-instance', (event, commandLine, workingDirectory) => {
+  //   // Someone tried to run a second instance, we should focus our window.
+  //   if (myWindow) {
+  //     if (myWindow.isMinimized()) myWindow.restore()
+  //     myWindow.focus()
+  //   }
+  // })
+  // Create myWindow, load the rest of the app, etc...
+  app.on('ready', () => {
+    createMainWindow();
+    try {
+      createAdWindow();
+    } catch (error) {
+      console.log('khong co man 2')
+    }
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.send('version', app.getVersion())
+    })
+  })
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createMainWindow();
-  try {
-    createAdWindow();
-  } catch (error) {
-    console.log('khong co man 2')
-  }
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('version', app.getVersion())
-  })
+
+// app.whenReady().then(() => {
+//   createMainWindow();
+//   try {
+//     createAdWindow();
+//   } catch (error) {
+//     console.log('khong co man 2')
+//   }
+//   mainWindow.webContents.on('did-finish-load', () => {
+//     mainWindow.webContents.send('version', app.getVersion())
+//   })
   
-})
+// })
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

@@ -1,11 +1,11 @@
 {
   "name": "posonline",
-  "productName": "NEOCAFE-POS v1.0.3",
+  "productName": "NEOCAFE-POS v1.0.5",
   "description": "Phần mềm Order trên POS",
   "keywords": [],
   "main": "./main.js",
   "types": "libPOS/index.d.ts",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "author": "khaicafe",
   "scripts": {
     "dev": "electron-forge start",
@@ -17,8 +17,8 @@
   },
   "license": "MIT",
   "build": {
-    "afterPack": "setup_client.js",
     "nsis": {
+      "include": "build/installer.nsh",
       "oneClick": true,
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
