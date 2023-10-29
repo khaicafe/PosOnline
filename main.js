@@ -352,9 +352,9 @@ if (!gotTheLock) {
     } catch (error) {
       console.log('khong co man 2')
     }
-    mainWindow.webContents.on('did-finish-load', () => {
-      mainWindow.webContents.send('version', app.getVersion())
-    })
+    // mainWindow.webContents.on('did-finish-load', () => {
+    //   mainWindow.webContents.send('version', app.getVersion())
+    // })
   })
 }
 // This method will be called when Electron has finished
