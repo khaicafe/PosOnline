@@ -143,24 +143,28 @@ function createMainWindow () {
   const options = {
     hostname: 't.pos.imenu.tech', // Thay bằng địa chỉ server thực tế
     port: 80, // Port của server
-    path: '/', // Đường dẫn trang bạn muốn kiểm tra
+    path: '/staff/', // Đường dẫn trang bạn muốn kiểm tra
     method: 'GET',
   };
 
   const request = http.request(options, (response) => {
     if (response.statusCode === 200) {
       clearInterval(serverCheckInterval); // Dừng vòng lặp khi kết nối thành công
-      mainWindow.loadURL('https://t.pos.imenu.tech'); // Tải trang web khi kết nối thành công
+      mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
     }
-  });
+    else {
+      console.log('Không thể kết nối với server:', response.statusCode);
+    }
+    });
 
-  request.on('error', (error) => {
-    // Xử lý lỗi nếu không thể kết nối với server
-    console.error('Không thể kết nối với server:', error.message);
-  });
+    request.on('error', (error) => {
+      mainWindow.webContents.reloadIgnoringCache();
+      // Xử lý lỗi nếu không thể kết nối với server
+      console.log('Không thể kết nối với server:', error.message);
+    });
 
-  request.end();
-}, 5000); // Kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian kiểm tra)
+    request.end();
+  }, 5000); // Kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian kiểm tra)
 
   // console.log(mainWindow)
   // and load the index.html of the app.
