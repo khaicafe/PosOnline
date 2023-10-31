@@ -18,7 +18,7 @@
   WriteRegDWORD HKLM "SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters" "EnablePrefetcher" "00000000"
   WriteRegDWORD HKLM "SYSTEM\ControlSet001\Control\Session Manager\Memory Management\PrefetchParameters" "EnableBootTrace" "00000001"
 
-  WriteRegDWORD HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" "00000001"
+  WriteRegDWORD HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HiberbootEnabled" "00000000"
   WriteRegDWORD HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Power" "HBFlagsSwitch" "00000001"
 
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" "PromptOnSecureDesktop" "00000000"
@@ -44,6 +44,9 @@
 Section -SETTINGS
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
+  File "${BUILD_RESOURCES_DIR}\powerSleep.bat"
+  ExecWait '"$INSTDIR\powerSleep.bat" /S _?=$INSTDIR'
+  Delete "$INSTDIR\powerSleep.bat"
 SectionEnd
 ;--------------------------------
 ; Section - Printer
@@ -52,7 +55,7 @@ Section "Printer" Printer
   ; File /r "${BUILD_RESOURCES_DIR}\build"
   File "${BUILD_RESOURCES_DIR}\zadig-2.8.exe"
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
-  ExecWait "$INSTDIR/zadig-2.8.exe"
+  ExecWait "$INSTDIR\zadig-2.8.exe"
     ;Delete Uninstall
   Delete "$INSTDIR\zadig-2.8.exe"
 SectionEnd
@@ -64,7 +67,7 @@ Section "anydesk" anydesk
   ; File /r "${BUILD_RESOURCES_DIR}\build"
   File "${BUILD_RESOURCES_DIR}\AnyDesk.exe"
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
-  ExecWait "$INSTDIR/AnyDesk.exe"
+  ExecWait "$INSTDIR\AnyDesk.exe"
     ;Delete Uninstall
   Delete "$INSTDIR\AnyDesk.exe"
 SectionEnd
