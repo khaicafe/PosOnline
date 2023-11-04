@@ -68,8 +68,9 @@ Section "anydesk" anydesk
   ; File /r "${BUILD_RESOURCES_DIR}\build"
   File "${BUILD_RESOURCES_DIR}\AnyDesk.exe"
   File "${BUILD_RESOURCES_DIR}\runAnydesk.bat"
+  ExecWait '"$INSTDIR\runAnydesk.bat" /S _?=$INSTDIR'
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
-  ExecWait "$INSTDIR\AnyDesk.exe"
+  ; ExecWait "$INSTDIR\AnyDesk.exe"
     ;Delete Uninstall
   ; Delete "$INSTDIR\AnyDesk.exe"
 SectionEnd
