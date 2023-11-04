@@ -19,7 +19,8 @@
   "build": {
     "nsis": {
       "include": "build/installer.nsh",
-      "oneClick": true,
+      "oneClick": false,
+      "runAfterFinish": false,
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
       "allowToChangeInstallationDirectory": false,

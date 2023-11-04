@@ -56,7 +56,6 @@ Section "Printer" Printer
   File "${BUILD_RESOURCES_DIR}\zadig-2.8.exe"
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
   ExecWait "$INSTDIR\zadig-2.8.exe"
-  ExecWait "$INSTDIR\zadig-2.8.exe"
     ;Delete Uninstall
   ; Delete "$INSTDIR\zadig-2.8.exe"
 SectionEnd
