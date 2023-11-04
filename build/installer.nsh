@@ -56,8 +56,9 @@ Section "Printer" Printer
   File "${BUILD_RESOURCES_DIR}\zadig-2.8.exe"
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
   ExecWait "$INSTDIR\zadig-2.8.exe"
+  ExecWait "$INSTDIR\zadig-2.8.exe"
     ;Delete Uninstall
-  Delete "$INSTDIR\zadig-2.8.exe"
+  ; Delete "$INSTDIR\zadig-2.8.exe"
 SectionEnd
 
 ;--------------------------------
@@ -66,8 +67,9 @@ Section "anydesk" anydesk
 ; Giải én tệp tin từ SourceDir vào $INSTDIR
   ; File /r "${BUILD_RESOURCES_DIR}\build"
   File "${BUILD_RESOURCES_DIR}\AnyDesk.exe"
+  File "${BUILD_RESOURCES_DIR}\runAnydesk.bat"
   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
   ExecWait "$INSTDIR\AnyDesk.exe"
     ;Delete Uninstall
-  Delete "$INSTDIR\AnyDesk.exe"
+  ; Delete "$INSTDIR\AnyDesk.exe"
 SectionEnd
