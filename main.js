@@ -34,7 +34,8 @@ process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 let mainWindow, printers, adWindow
 const windows = [];
 let updateDownloaded = false;
-
+let isConnect = true
+let isNotConnect = true
 // run this as early in the main process as possible.
 // if (require('electron-squirrel-startup')) app.quit();
 
@@ -149,19 +150,32 @@ function createMainWindow () {
 
   const request = http.request(options, (response) => {
     if (response.statusCode === 200) {
-      clearInterval(serverCheckInterval); // Dừng vòng lặp khi kết nối thành công
-      mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+      // clearInterval(serverCheckInterval); // Dừng vòng lặp khi kết nối thành công
+      if (isConnect === true){
+        isConnect = false; // đã connect
+        isNotConnect = true;
+        console.log('kết nối với server thành công:', response.statusCode);
+        // mainWindow.loadFile(path.join(__dirname, 'index.html'));
+        mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+      }
     }
     else {
-      console.log('Không thể kết nối với server:', response.statusCode);
+      checkInternet = false; // not connect
+      console.log('Không thể kết nối với server...', response.statusCode);
+      // mainWindow.loadFile(path.join(__dirname, 'index.html'));
     }
     });
 
-    request.on('error', (error) => {
-      mainWindow.webContents.reloadIgnoringCache();
-      // Xử lý lỗi nếu không thể kết nối với server
-      console.log('Không thể kết nối với server:', error.message);
-    });
+  request.on('error', (error) => {
+    mainWindow.webContents.reloadIgnoringCache();
+    // Xử lý lỗi nếu không thể kết nối với server
+    console.log('Không thể kết nối với server:', error.message);
+    if (isNotConnect === true){
+      isConnect = true;
+      isNotConnect = false; // đã not connect
+      mainWindow.loadFile(path.join(__dirname, 'index.html'));// Tải trang web khi không thành công
+    }
+  });
 
     request.end();
   }, 5000); // Kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian kiểm tra)
