@@ -156,14 +156,17 @@ function createMainWindow () {
         isNotConnect = true;
         console.log('kết nối với server thành công:', response.statusCode);
         // mainWindow.loadFile(path.join(__dirname, 'index.html'));
-        mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+        // mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+
+        // test dev-pos
+        mainWindow.loadURL('http://localhost:3002/staff/'); // Tải trang web khi kết nối thành công
       }
     }
-    else {
-      checkInternet = false; // not connect
-      console.log('Không thể kết nối với server...', response.statusCode);
-      // mainWindow.loadFile(path.join(__dirname, 'index.html'));
-    }
+    // else {
+    //   checkInternet = false; // not connect
+    //   console.log('Không thể kết nối với server...', response.statusCode);
+    //   // mainWindow.loadFile(path.join(__dirname, 'index.html'));
+    // }
     });
 
   request.on('error', (error) => {
@@ -182,7 +185,7 @@ function createMainWindow () {
 
   // console.log(mainWindow)
   // and load the index.html of the app.
-  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
   // mainWindow.loadURL('https://dev-pos.neomenu.vn/staff/')
   // mainWindow.loadURL('https://t.pos.imenu.tech/')
   
@@ -375,6 +378,17 @@ function createAdWindow() {
   //   // }
   // })
 }
+// Lắng nghe sự kiện từ render process send path config to renderer.js
+ipcMain.on('send-path', (event) => {
+  const appPath = app.getPath('appData');
+  event.reply('path-reply', rootDir);
+});
+// Lắng nghe sự kiện từ render refesh web từ web pos online
+ipcMain.on('refesh_web', (event) => {
+  console.log('refesweb electron listen')
+  adWindow.loadURL('https://t.pos.imenu.tech/miniweb'); // Tải trang mini web khi kết nối thành công
+
+});
 
 // check app đã run hay chưa
 // let myWindow = null
