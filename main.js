@@ -36,6 +36,7 @@ const windows = [];
 let updateDownloaded = false;
 let isConnect = true
 let isNotConnect = true
+let countConnect = 0
 // run this as early in the main process as possible.
 // if (require('electron-squirrel-startup')) app.quit();
 
@@ -133,11 +134,12 @@ function createMainWindow () {
       contextIsolation: false,
       nodeIntegrationInWorker: true,
       nodeIntegrationInSubFrames: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
+      webviewTag: true
     }
   })
  // Tạo một vòng lặp để kiểm tra kết nối với server
- const serverCheckInterval = setInterval(() => {
+  const serverCheckInterval = setInterval(() => {
   // Thực hiện một HTTP request đến server
   // Ở đây, sử dụng module `http` để gửi một GET request
   const http = require('http');
@@ -154,12 +156,13 @@ function createMainWindow () {
       if (isConnect === true){
         isConnect = false; // đã connect
         isNotConnect = true;
+        countConnect = 0;
         console.log('kết nối với server thành công:', response.statusCode);
         // mainWindow.loadFile(path.join(__dirname, 'index.html'));
-        // mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+        mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
 
         // test dev-pos
-        mainWindow.loadURL('http://localhost:3002/staff/'); // Tải trang web khi kết nối thành công
+        // mainWindow.loadURL('http://localhost:3002/staff/'); // Tải trang web khi kết nối thành công
       }
     }
     // else {
@@ -170,22 +173,44 @@ function createMainWindow () {
     });
 
   request.on('error', (error) => {
-    mainWindow.webContents.reloadIgnoringCache();
     // Xử lý lỗi nếu không thể kết nối với server
     console.log('Không thể kết nối với server:', error.message);
-    if (isNotConnect === true){
+    countConnect = countConnect + 1;
+    console.log('countConnect', countConnect )
+    if (isNotConnect === true && countConnect === 2){
       isConnect = true;
       isNotConnect = false; // đã not connect
+      mainWindow.webContents.reloadIgnoringCache();
       mainWindow.loadFile(path.join(__dirname, 'index.html'));// Tải trang web khi không thành công
     }
   });
 
-    request.end();
-  }, 5000); // Kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian kiểm tra)
+  request.end();
+  }, 30000); // Kiểm tra mỗi 5 giây (có thể điều chỉnh thời gian kiểm tra)
 
   // console.log(mainWindow)
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  // and load the index.html of the app. load begin
+  const http = require('http');
+  const options = {
+    hostname: 't.pos.imenu.tech', // Thay bằng địa chỉ server thực tế
+    port: 80, // Port của server
+    path: '/staff/', // Đường dẫn trang bạn muốn kiểm tra
+    method: 'GET',
+  };
+  const request_main = http.request(options, (response) => {
+    if (response.statusCode === 200) {
+      isConnect = false; // đã connect
+      mainWindow.loadURL('https://t.pos.imenu.tech/staff/'); // Tải trang web khi kết nối thành công
+    }
+    });
+
+  request_main.on('error', (error) => {
+    // Xử lý lỗi nếu không thể kết nối với server
+    console.log('Không thể kết nối với server:', error.message);
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));// Tải trang web khi không thành công
+  });
+  request_main.end();
+  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
   // mainWindow.loadURL('https://dev-pos.neomenu.vn/staff/')
   // mainWindow.loadURL('https://t.pos.imenu.tech/')
   

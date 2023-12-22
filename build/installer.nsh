@@ -97,15 +97,15 @@ Section -SETTINGS
 SectionEnd
 ;--------------------------------
 ; Section - Printer
-Section "Printer" Printer
-; Giải én tệp tin từ SourceDir vào $INSTDIR
-  ; File /r "${BUILD_RESOURCES_DIR}\build"
-  File "${BUILD_RESOURCES_DIR}\zadig-2.8.exe"
-  ; MessageBox MB_ICONINFORMATION "$INSTDIR"
-  ExecWait "$INSTDIR\zadig-2.8.exe"
-    ;Delete Uninstall
-  ; Delete "$INSTDIR\zadig-2.8.exe"
-SectionEnd
+; Section "Printer" Printer
+;   ; Giải én tệp tin từ SourceDir vào $INSTDIR
+;   ; File /r "${BUILD_RESOURCES_DIR}\build"
+;   File "${BUILD_RESOURCES_DIR}\zadig-2.8.exe"
+;   ; MessageBox MB_ICONINFORMATION "$INSTDIR"
+;   ExecWait "$INSTDIR\zadig-2.8.exe"
+;     ;Delete Uninstall
+;   ; Delete "$INSTDIR\zadig-2.8.exe"
+; SectionEnd
 
 ;--------------------------------
 ; Section - anydesk
